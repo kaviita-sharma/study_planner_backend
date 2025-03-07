@@ -1,0 +1,6 @@
+@StudyPlanner.BLL_HostAddress = http://localhost:5275
+
+GET {{StudyPlanner.BLL_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
