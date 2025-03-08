@@ -1,6 +1,0 @@
-@StudyPlanner.Core_HostAddress = http://localhost:5274
-
-GET {{StudyPlanner.Core_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
