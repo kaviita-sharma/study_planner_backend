@@ -10,5 +10,9 @@ namespace Study_Planner.BLL.IServices
     public interface ISubjectsService
     {
         Task<int> AddSubjectWithDetailsAsync(Subjects subjectDto);
+        Task<IEnumerable<Subjects>> GetAllSubjectsAsync();
+        Task<Subjects?> GetSubjectByIdAsync(int id);
+        Task<bool> UpdateSubjectAsync(int id, Subjects subjectDto);
+        Task<bool> DeleteSubjectAsync(int id);
     }
 }

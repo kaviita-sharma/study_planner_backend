@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Study_Planner._DLL.Service;
 using Study_Planner.BLL.IServices;
 using Study_Planner.Core.DTOs;
 
@@ -40,6 +41,37 @@ namespace StudyPlanner.Application.Controllers
                     Details = ex.Message
                 });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSubjects()
+        {
+            var subjects = await _subjectsService.GetAllSubjectsAsync();
+            return Ok(subjects);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSubjectById(int id)
+        {
+            var subject = await _subjectsService.GetSubjectByIdAsync(id);
+            if (subject == null) return NotFound(new { error = "Subject not found" });
+            return Ok(subject);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateSubject(int id, [FromBody] Subjects subjectDto)
+        {
+            var updated = await _subjectsService.UpdateSubjectAsync(id, subjectDto);
+            if (!updated) return BadRequest(new { error = "Invalid data provided" });
+            return Ok(new { message = "Subject updated successfully" });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSubject(int id)
+        {
+            var deleted = await _subjectsService.DeleteSubjectAsync(id);
+            if (!deleted) return NotFound(new { error = "Subject not found" });
+            return Ok(new { message = "Subject deleted successfully" });
         }
     }
 }
