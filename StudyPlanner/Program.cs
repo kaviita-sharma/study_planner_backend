@@ -6,6 +6,7 @@ using Study_Planner._DLL.Repository;
 using Study_Planner._DLL.Service;
 using Study_Planner.BLL.IServices;
 using Study_Planner.BLL.Services;
+using StudyPlanner.Application.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -104,7 +105,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<GlobalErrorHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
 
