@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Study_Planner._DLL.IRepository;
 using Study_Planner._DLL.Repository;
+using Study_Planner._DLL.Service;
 using Study_Planner.BLL.IServices;
 using Study_Planner.BLL.Services;
 using System.Text;
@@ -19,11 +20,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton(configuration);
 
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserPreferenceRepository, UserPreferenceRepository>();
+builder.Services.AddScoped < ISubjectsRepository ,SubjectsRepository>();
 
 
+
+builder.Services.AddScoped<ISubjectsService, SubjectsService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 
