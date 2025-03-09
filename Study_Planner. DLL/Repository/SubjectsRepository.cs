@@ -111,5 +111,152 @@ namespace Study_Planner._DLL.Repository
                 }
             }
         }
+
+
+        public async Task<IEnumerable<Subjects>> GetAllSubjectsAsync()
+        {
+            var subjects = new List<Subjects>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("SELECT * FROM Subjects", connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            subjects.Add(new Subjects
+                            {
+                                SubjectName = reader.GetString("SubjectName"),
+                                DifficultyLevel = reader.GetInt32("DifficultyLevel"),
+                                Priority = reader.GetInt32("Priority"),
+                                EstimatedCompletionTime = reader["EstimatedCompletionTime"] as int?,
+                                Status = reader.GetString("Status")
+                            });
+                        }
+                    }
+                }
+            }
+
+            return subjects;
+        }
+
+        public async Task<Subjects?> GetSubjectByIdAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("SELECT * FROM Subjects WHERE id = @id", connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Subjects
+                            {
+                                SubjectName = reader.GetString("SubjectName"),
+                                DifficultyLevel = reader.GetInt32("DifficultyLevel"),
+                                Priority = reader.GetInt32("Priority"),
+                                EstimatedCompletionTime = reader["EstimatedCompletionTime"] as int?,
+                                Status = reader.GetString("Status")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<bool> UpdateSubjectAsync(int id, UpdateSubjects subjectDto)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var updateQuery = new List<string>();
+                var command = new SqlCommand();
+
+                if (!string.IsNullOrEmpty(subjectDto.SubjectName))
+                {
+                    updateQuery.Add("SubjectName = @SubjectName");
+                    command.Parameters.AddWithValue("@SubjectName", subjectDto.SubjectName);
+                }
+
+                if (subjectDto.DifficultyLevel.HasValue && subjectDto.DifficultyLevel > 0)
+                {
+                    updateQuery.Add("DifficultyLevel = @DifficultyLevel");
+                    command.Parameters.AddWithValue("@DifficultyLevel", subjectDto.DifficultyLevel);
+                }
+
+                if (subjectDto.Priority.HasValue && subjectDto.Priority > 0)
+                {
+                    updateQuery.Add("Priority = @Priority");
+                    command.Parameters.AddWithValue("@Priority", subjectDto.Priority);
+                }
+
+                if (subjectDto.EstimatedCompletionTime.HasValue && subjectDto.EstimatedCompletionTime > 0)
+                {
+                    updateQuery.Add("EstimatedCompletionTime = @EstimatedCompletionTime");
+                    command.Parameters.AddWithValue("@EstimatedCompletionTime", subjectDto.EstimatedCompletionTime);
+                }
+
+                if (!string.IsNullOrEmpty(subjectDto.Status))
+                {
+                    updateQuery.Add("Status = @Status");
+                    command.Parameters.AddWithValue("@Status", subjectDto.Status);
+                }
+
+                if (subjectDto.StartDate.HasValue)
+                {
+                    updateQuery.Add("StartDate = @StartDate");
+                    command.Parameters.AddWithValue("@StartDate", subjectDto.StartDate);
+                }
+
+                if (subjectDto.EndDate.HasValue)
+                {
+                    updateQuery.Add("EndDate = @EndDate");
+                    command.Parameters.AddWithValue("@EndDate", subjectDto.EndDate);
+                }
+
+                if (!updateQuery.Any())
+                {
+                    // No valid data provided for update
+                    return false;
+                }
+
+                command.CommandText = $@"
+            UPDATE Subjects
+            SET {string.Join(", ", updateQuery)}
+            WHERE id = @id";
+
+                command.Parameters.AddWithValue("@id", id);
+                command.Connection = connection;
+
+                var rowsAffected = await command.ExecuteNonQueryAsync();
+                return rowsAffected > 0;
+            }
+        }
+
+
+        public async Task<bool> DeleteSubjectAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("DELETE FROM Subjects WHERE id = @id", connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    var rowsAffected = await command.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
+                }
+            }
+        }
     }
 }

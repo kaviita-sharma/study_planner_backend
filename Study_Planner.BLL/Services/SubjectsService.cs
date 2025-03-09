@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Study_Planner._DLL.IRepository;
+using Study_Planner._DLL.Repository;
 using Study_Planner.BLL.IServices;
 using Study_Planner.Core.DTOs;
 using System;
@@ -112,6 +113,18 @@ namespace Study_Planner._DLL.Service
             // Pass the validated data to the repository
             return await _subjectsRepository.AddSubjectWithDetailsAsync(subjectDto, userId);
         }
+
+        public async Task<IEnumerable<Subjects>> GetAllSubjectsAsync() =>
+            await _subjectsRepository.GetAllSubjectsAsync();
+
+        public async Task<Subjects?> GetSubjectByIdAsync(int id) =>
+            await _subjectsRepository.GetSubjectByIdAsync(id);
+
+        public async Task<bool> UpdateSubjectAsync(int id, UpdateSubjects subjectDto) =>
+            await _subjectsRepository.UpdateSubjectAsync(id, subjectDto);
+
+        public async Task<bool> DeleteSubjectAsync(int id) =>
+            await _subjectsRepository.DeleteSubjectAsync(id);
 
         private string ExtractUserIdFromToken(string token)
         {
