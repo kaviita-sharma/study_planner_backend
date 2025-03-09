@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyPlanner", "StudyPlanner\StudyPlanner.csproj", "{DE5F8B94-77C3-457C-996D-BBB55870B7A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudyPlanner.Application", "StudyPlanner\StudyPlanner.Application.csproj", "{DE5F8B94-77C3-457C-996D-BBB55870B7A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study_Planner.BLL", "Study_Planner.BLL\Study_Planner.BLL.csproj", "{7770C8EE-AD2D-42F3-9DAC-8B399010B1CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study_Planner. DLL", "Study_Planner. DLL\Study_Planner. DLL.csproj", "{016617FB-850D-4CD7-8266-11411B1E509A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study_Planner.Core", "Study_Planner.Core\Study_Planner.Core.csproj", "{1EB2E070-91CC-481B-8307-513DFA1B17A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{DE5F8B94-77C3-457C-996D-BBB55870B7A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE5F8B94-77C3-457C-996D-BBB55870B7A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE5F8B94-77C3-457C-996D-BBB55870B7A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7770C8EE-AD2D-42F3-9DAC-8B399010B1CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7770C8EE-AD2D-42F3-9DAC-8B399010B1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7770C8EE-AD2D-42F3-9DAC-8B399010B1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7770C8EE-AD2D-42F3-9DAC-8B399010B1CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{016617FB-850D-4CD7-8266-11411B1E509A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{016617FB-850D-4CD7-8266-11411B1E509A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{016617FB-850D-4CD7-8266-11411B1E509A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{016617FB-850D-4CD7-8266-11411B1E509A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB2E070-91CC-481B-8307-513DFA1B17A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB2E070-91CC-481B-8307-513DFA1B17A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB2E070-91CC-481B-8307-513DFA1B17A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB2E070-91CC-481B-8307-513DFA1B17A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

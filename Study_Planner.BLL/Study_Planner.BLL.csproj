@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Study_Planner. DLL\Study_Planner. DLL.csproj" />
+    <ProjectReference Include="..\Study_Planner.Core\Study_Planner.Core.csproj" />
+  </ItemGroup>
+
 </Project>
