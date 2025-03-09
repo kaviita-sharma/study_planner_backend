@@ -1,8 +1,10 @@
-﻿namespace Study_Planner.Core.DTOs
+﻿using System.Text.Json.Serialization;
+
+namespace Study_Planner.Core.DTOs
 {
         public class StudySessionDto
         {
-            public int Id { get; set; }
+            [JsonIgnore]public int? Id { get; set; }
             public int UserId { get; set; }
             public int? SubjectId { get; set; }
             public int? TopicId { get; set; }

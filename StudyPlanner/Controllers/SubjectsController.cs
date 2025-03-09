@@ -59,7 +59,7 @@ namespace StudyPlanner.Application.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubject(int id, [FromBody] Subjects subjectDto)
+        public async Task<IActionResult> UpdateSubject(int id, [FromBody] UpdateSubjects subjectDto)
         {
             var updated = await _subjectsService.UpdateSubjectAsync(id, subjectDto);
             if (!updated) return BadRequest(new { error = "Invalid data provided" });
