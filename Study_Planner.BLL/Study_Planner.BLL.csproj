@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\IStudySessionService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="IServices\IStudySessionService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Study_Planner. DLL\Study_Planner. DLL.csproj" />
     <ProjectReference Include="..\Study_Planner.Core\Study_Planner.Core.csproj" />
   </ItemGroup>
