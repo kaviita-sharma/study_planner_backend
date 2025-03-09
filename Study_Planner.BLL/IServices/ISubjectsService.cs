@@ -12,7 +12,7 @@ namespace Study_Planner.BLL.IServices
         Task<int> AddSubjectWithDetailsAsync(Subjects subjectDto);
         Task<IEnumerable<Subjects>> GetAllSubjectsAsync();
         Task<Subjects?> GetSubjectByIdAsync(int id);
-        Task<bool> UpdateSubjectAsync(int id, Subjects subjectDto);
+        Task<bool> UpdateSubjectAsync(int id, UpdateSubjects subjectDto);
         Task<bool> DeleteSubjectAsync(int id);
     }
 }
