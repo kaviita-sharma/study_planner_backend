@@ -61,6 +61,8 @@ builder.Services.AddScoped<ISubjectsRepository, SubjectsRepository>();
 builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
 builder.Services.AddScoped<IAssessmentsRepository, AssessmentsRepository>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+
 
 // Register Services
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
@@ -68,6 +70,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddScoped<IAssessmentsService, AssessmentsService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
+builder.Services.AddScoped<ITopicService, TopicService>();
 
 // JWT Authentication Configuration
 var jwtSettings = configuration.GetSection("Jwt");
