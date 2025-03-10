@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Study_Planner.Core.DTOs
+﻿namespace Study_Planner.Core.DTOs
 {
     public class RegisterRequest
     {
@@ -15,8 +9,6 @@ namespace Study_Planner.Core.DTOs
         public string LastName { get; set; }
         public UserPreferenceDTO Preferences { get; set; }
     }
-
-
 }
 
 
