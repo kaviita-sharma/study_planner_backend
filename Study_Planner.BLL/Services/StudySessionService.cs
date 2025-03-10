@@ -13,34 +13,64 @@ namespace Study_Planner.BLL.Services
             _studySessionRepository = studySessionRepository;
         }
 
-        public async Task<StudySessionDto> CreateStudySessionAsync(StudySessionDto studySessionDto)
+        // CREATE
+        public async Task<StudySessionDto> CreateStudySessionAsync(CreateStudySessionDto createDto)
         {
-            return await _studySessionRepository.CreateStudySessionAsync(studySessionDto);
+            return await _studySessionRepository.CreateStudySessionAsync(createDto);
         }
 
+        // READ (GET ALL)
         public async Task<IEnumerable<StudySessionDto>> GetAllStudySessionsAsync()
         {
             return await _studySessionRepository.GetAllStudySessionsAsync();
         }
 
+        // READ (GET BY ID)
         public async Task<StudySessionDto> GetStudySessionByIdAsync(int id)
         {
-            return await _studySessionRepository.GetStudySessionByIdAsync(id);
+            var session = await _studySessionRepository.GetStudySessionByIdAsync(id);
+            if (session == null)
+            {
+                throw new KeyNotFoundException($"Study session with ID {id} not found.");
+            }
+            return session;
         }
 
-        public async Task<StudySessionDto> UpdateStudySessionAsync(int id, StudySessionDto studySessionDto)
+        // UPDATE (Null-Check Based)
+        public async Task<StudySessionDto> UpdateStudySessionAsync(int id, UpdateStudySessionDto updateDto)
         {
             var existingSession = await _studySessionRepository.GetStudySessionByIdAsync(id);
             if (existingSession == null)
             {
-                return null; 
+                throw new KeyNotFoundException($"Study session with ID {id} not found.");
             }
 
-            return await _studySessionRepository.UpdateStudySessionAsync(id, studySessionDto);
+            var updatedSession = await _studySessionRepository.UpdateStudySessionAsync(id, updateDto);
+
+            if (updatedSession == null)
+            {
+                throw new InvalidOperationException($"Failed to update study session with ID {id}.");
+            }
+
+            return updatedSession;
         }
+
+        // DELETE
         public async Task<bool> DeleteStudySessionAsync(int id)
         {
-            return await _studySessionRepository.DeleteStudySessionAsync(id);
+            var existingSession = await _studySessionRepository.GetStudySessionByIdAsync(id);
+            if (existingSession == null)
+            {
+                throw new KeyNotFoundException($"Study session with ID {id} not found.");
+            }
+
+            var deleted = await _studySessionRepository.DeleteStudySessionAsync(id);
+            if (!deleted)
+            {
+                throw new InvalidOperationException($"Failed to delete study session with ID {id}.");
+            }
+
+            return true;
         }
     }
 }

@@ -79,6 +79,8 @@ builder.Services.AddScoped<ITopicService, TopicService>();
 // Register Fluent Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAssessmentValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateAssessmentValidator>();
+builder.Services.AddScoped<IValidator<CreateStudySessionDto>, CreateStudySessionValidator>();
+builder.Services.AddScoped<IValidator<UpdateStudySessionDto>, UpdateStudySessionValidator>();
 
 
 // JWT Authentication Configuration

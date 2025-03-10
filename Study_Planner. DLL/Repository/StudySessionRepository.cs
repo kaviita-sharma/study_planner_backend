@@ -3,9 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Study_Planner._DLL.IRepository;
 using Study_Planner.Core.DTOs;
-using Microsoft.Extensions.Configuration;
-using Study_Planner.Core.DTOs;
-using Study_Planner._DLL.IRepository;
 
 namespace Study_Planner._DLL.Repository
 {
@@ -19,36 +16,35 @@ namespace Study_Planner._DLL.Repository
         }
 
         // CREATE
-        public async Task<StudySessionDto> CreateStudySessionAsync(StudySessionDto studySessionDto)
+        public async Task<StudySessionDto> CreateStudySessionAsync(CreateStudySessionDto createDto)
         {
             using var conn = new SqlConnection(_connectionString);
             await conn.OpenAsync();
 
             string query = @"
                 INSERT INTO StudySessions 
-                (UserId, SubjectId, TopicId, SubTopicId, Notes, ScheduledStartTime, ScheduledEndTime, 
-                 ActualStartTime, ActualEndTime, Status, FocusRating, ComprehensionRating, CreatedAt, UpdatedAt) 
+                (UserId, SubjectId, TopicId, SubTopicId, Notes, ScheduledStartTime, 
+                ScheduledEndTime, Status, FocusRating, ComprehensionRating, CreatedAt, UpdatedAt) 
                 OUTPUT INSERTED.Id 
                 VALUES 
-                (@UserId, @SubjectId, @TopicId, @SubTopicId, @Notes, @ScheduledStartTime, @ScheduledEndTime, 
-                 @ActualStartTime, @ActualEndTime, @Status, @FocusRating, @ComprehensionRating, GETDATE(), GETDATE())";
+                (@UserId, @SubjectId, @TopicId, @SubTopicId, @Notes, @ScheduledStartTime, 
+                @ScheduledEndTime, @Status, @FocusRating, @ComprehensionRating, GETDATE(), GETDATE())";
 
             using var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@UserId", studySessionDto.UserId);
-            cmd.Parameters.AddWithValue("@SubjectId", studySessionDto.SubjectId ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@TopicId", studySessionDto.TopicId ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@SubTopicId", studySessionDto.SubTopicId ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@Notes", studySessionDto.Notes);
-            cmd.Parameters.AddWithValue("@ScheduledStartTime", studySessionDto.ScheduledStartTime);
-            cmd.Parameters.AddWithValue("@ScheduledEndTime", studySessionDto.ScheduledEndTime);
-            cmd.Parameters.AddWithValue("@ActualStartTime", studySessionDto.ActualStartTime ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@ActualEndTime", studySessionDto.ActualEndTime ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@Status", studySessionDto.Status);
-            cmd.Parameters.AddWithValue("@FocusRating", studySessionDto.FocusRating ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@ComprehensionRating", studySessionDto.ComprehensionRating ?? (object)DBNull.Value);
 
-            studySessionDto.Id = (int)await cmd.ExecuteScalarAsync();
-            return studySessionDto;
+            cmd.Parameters.AddWithValue("@UserId", createDto.UserId);
+            cmd.Parameters.AddWithValue("@SubjectId", createDto.SubjectId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@TopicId", createDto.TopicId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@SubTopicId", createDto.SubTopicId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Notes", createDto.Notes);
+            cmd.Parameters.AddWithValue("@ScheduledStartTime", createDto.ScheduledStartTime);
+            cmd.Parameters.AddWithValue("@ScheduledEndTime", createDto.ScheduledEndTime);
+            cmd.Parameters.AddWithValue("@Status", createDto.Status);
+            cmd.Parameters.AddWithValue("@FocusRating", createDto.FocusRating ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@ComprehensionRating", createDto.ComprehensionRating ?? (object)DBNull.Value);
+
+            var id = (int)await cmd.ExecuteScalarAsync();
+            return await GetStudySessionByIdAsync(id);
         }
 
         // READ (GET ALL)
@@ -89,41 +85,80 @@ namespace Study_Planner._DLL.Repository
             return null;
         }
 
-        public async Task<StudySessionDto> UpdateStudySessionAsync(int id, StudySessionDto studySessionDto)
+        // UPDATE (Null-Check Based)
+        public async Task<StudySessionDto> UpdateStudySessionAsync(int id, UpdateStudySessionDto updateDto)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var fieldsToUpdate = new List<string>();
+            var parameters = new Dictionary<string, object>();
+
+            if (updateDto.SubjectId.HasValue)
             {
-                await conn.OpenAsync();
-                string query = @"UPDATE StudySessions 
-                                 SET UserId = @UserId, SubjectId = @SubjectId, TopicId = @TopicId, 
-                                     SubTopicId = @SubTopicId, Notes = @Notes, 
-                                     ScheduledStartTime = @ScheduledStartTime, ScheduledEndTime = @ScheduledEndTime, 
-                                     ActualStartTime = @ActualStartTime, ActualEndTime = @ActualEndTime, 
-                                     Status = @Status, FocusRating = @FocusRating, 
-                                     ComprehensionRating = @ComprehensionRating, UpdatedAt = GETDATE() 
-                                 WHERE Id = @Id";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    cmd.Parameters.AddWithValue("@UserId", studySessionDto.UserId);
-                    cmd.Parameters.AddWithValue("@SubjectId", studySessionDto.SubjectId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@TopicId", studySessionDto.TopicId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@SubTopicId", studySessionDto.SubTopicId ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Notes", studySessionDto.Notes);
-                    cmd.Parameters.AddWithValue("@ScheduledStartTime", studySessionDto.ScheduledStartTime);
-                    cmd.Parameters.AddWithValue("@ScheduledEndTime", studySessionDto.ScheduledEndTime);
-                    cmd.Parameters.AddWithValue("@ActualStartTime", (object)studySessionDto.ActualStartTime ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@ActualEndTime", (object)studySessionDto.ActualEndTime ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Status", studySessionDto.Status);
-                    cmd.Parameters.AddWithValue("@FocusRating", (object)studySessionDto.FocusRating ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@ComprehensionRating", (object)studySessionDto.ComprehensionRating ?? DBNull.Value);
-
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                    return rowsAffected > 0 ? studySessionDto : null;
-                }
+                fieldsToUpdate.Add("SubjectId = @SubjectId");
+                parameters["@SubjectId"] = updateDto.SubjectId;
             }
+            if (updateDto.TopicId.HasValue)
+            {
+                fieldsToUpdate.Add("TopicId = @TopicId");
+                parameters["@TopicId"] = updateDto.TopicId;
+            }
+            if (updateDto.SubTopicId.HasValue)
+            {
+                fieldsToUpdate.Add("SubTopicId = @SubTopicId");
+                parameters["@SubTopicId"] = updateDto.SubTopicId;
+            }
+            if (!string.IsNullOrEmpty(updateDto.Notes))
+            {
+                fieldsToUpdate.Add("Notes = @Notes");
+                parameters["@Notes"] = updateDto.Notes;
+            }
+            if (updateDto.ScheduledStartTime.HasValue)
+            {
+                fieldsToUpdate.Add("ScheduledStartTime = @ScheduledStartTime");
+                parameters["@ScheduledStartTime"] = updateDto.ScheduledStartTime;
+            }
+            if (updateDto.ScheduledEndTime.HasValue)
+            {
+                fieldsToUpdate.Add("ScheduledEndTime = @ScheduledEndTime");
+                parameters["@ScheduledEndTime"] = updateDto.ScheduledEndTime;
+            }
+            if (!string.IsNullOrEmpty(updateDto.Status))
+            {
+                fieldsToUpdate.Add("Status = @Status");
+                parameters["@Status"] = updateDto.Status;
+            }
+            if (updateDto.FocusRating.HasValue)
+            {
+                fieldsToUpdate.Add("FocusRating = @FocusRating");
+                parameters["@FocusRating"] = updateDto.FocusRating;
+            }
+            if (updateDto.ComprehensionRating.HasValue)
+            {
+                fieldsToUpdate.Add("ComprehensionRating = @ComprehensionRating");
+                parameters["@ComprehensionRating"] = updateDto.ComprehensionRating;
+            }
+
+            if (!fieldsToUpdate.Any()) return await GetStudySessionByIdAsync(id); // No fields to update
+
+            string query = $@"
+                UPDATE StudySessions 
+                SET {string.Join(", ", fieldsToUpdate)}, UpdatedAt = GETDATE() 
+                WHERE Id = @Id";
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            foreach (var param in parameters)
+            {
+                cmd.Parameters.AddWithValue(param.Key, param.Value);
+            }
+
+            int rowsAffected = await cmd.ExecuteNonQueryAsync();
+            return rowsAffected > 0 ? await GetStudySessionByIdAsync(id) : null;
         }
+
         // DELETE
         public async Task<bool> DeleteStudySessionAsync(int id)
         {
@@ -145,17 +180,17 @@ namespace Study_Planner._DLL.Repository
             {
                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                SubjectId = reader.IsDBNull(reader.GetOrdinal("SubjectId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("SubjectId")),
-                TopicId = reader.IsDBNull(reader.GetOrdinal("TopicId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TopicId")),
-                SubTopicId = reader.IsDBNull(reader.GetOrdinal("SubTopicId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("SubTopicId")),
+                SubjectId = reader.IsDBNull("SubjectId") ? (int?)null : reader.GetInt32("SubjectId"),
+                TopicId = reader.IsDBNull("TopicId") ? (int?)null : reader.GetInt32("TopicId"),
+                SubTopicId = reader.IsDBNull("SubTopicId") ? (int?)null : reader.GetInt32("SubTopicId"),
                 Notes = reader.GetString(reader.GetOrdinal("Notes")),
                 ScheduledStartTime = reader.GetDateTime(reader.GetOrdinal("ScheduledStartTime")),
                 ScheduledEndTime = reader.GetDateTime(reader.GetOrdinal("ScheduledEndTime")),
-                ActualStartTime = reader.IsDBNull(reader.GetOrdinal("ActualStartTime")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ActualStartTime")),
-                ActualEndTime = reader.IsDBNull(reader.GetOrdinal("ActualEndTime")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("ActualEndTime")),
                 Status = reader.GetString(reader.GetOrdinal("Status")),
-                FocusRating = reader.IsDBNull(reader.GetOrdinal("FocusRating")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("FocusRating")),
-                ComprehensionRating = reader.IsDBNull(reader.GetOrdinal("ComprehensionRating")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("ComprehensionRating"))
+                FocusRating = reader.IsDBNull("FocusRating") ? (int?)null : reader.GetInt32("FocusRating"),
+                ComprehensionRating = reader.IsDBNull("ComprehensionRating") ? (int?)null : reader.GetInt32("ComprehensionRating"),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                UpdatedAt = reader.GetDateTime(reader.GetOrdinal("UpdatedAt"))
             };
         }
     }
