@@ -1,9 +1,4 @@
 ﻿using Study_Planner.Core.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Study_Planner._DLL.IRepository
 {
@@ -11,9 +6,8 @@ namespace Study_Planner._DLL.IRepository
     {
         IEnumerable<AssessmentDTO> GetAllAssessments();
         AssessmentDTO GetAssessmentById(int id);
-        int CreateAssessment(AssessmentDTO assessment);
-        bool UpdateAssessment(int id, AssessmentDTO assessment);
+        int CreateAssessment(CreateAssessmentDTO assessment);
+        bool UpdateAssessment(int id, UpdateAssessmentDTO assessment);
         bool DeleteAssessment(int id);
     }
-
 }

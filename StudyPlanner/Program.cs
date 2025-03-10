@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -6,6 +8,7 @@ using Study_Planner._DLL.Repository;
 using Study_Planner._DLL.Service;
 using Study_Planner.BLL.IServices;
 using Study_Planner.BLL.Services;
+using StudyPlanner.Application.Validators;
 using StudyPlanner.Application.Middleware;
 using System.Text;
 
@@ -71,6 +74,12 @@ builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddScoped<IAssessmentsService, AssessmentsService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
+
+
+// Register Fluent Validation
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAssessmentValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateAssessmentValidator>();
+
 
 // JWT Authentication Configuration
 var jwtSettings = configuration.GetSection("Jwt");
