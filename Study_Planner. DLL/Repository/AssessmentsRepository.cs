@@ -10,10 +10,12 @@ namespace Study_Planner._DLL.Repository
     public class AssessmentsRepository : IAssessmentsRepository
     {
         private readonly string _connectionString;
+        private readonly TopicRepository _topicRepository;
 
         public AssessmentsRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _topicRepository = new TopicRepository(configuration);
         }
 
         // Fetch All Assessments
@@ -56,30 +58,48 @@ namespace Study_Planner._DLL.Repository
         }
 
         // Create New Assessment
-        public int CreateAssessment(CreateAssessmentDTO assessment)
+        public async Task<int> CreateAssessmentAsync(CreateAssessmentDTO assessment)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var command = new SqlCommand(@"
-                    INSERT INTO Assessments (UserId, SubjectId, TopicId, AssessmentName, Description, 
-                    AssessmentType, MaxScore, DueDate, IsCompleted, CreatedAt, UpdatedAt) 
-                    VALUES (@UserId, @SubjectId, @TopicId, @AssessmentName, @Description, @AssessmentType, 
-                    @MaxScore, @DueDate, 0, GETDATE(), GETDATE());
-                    SELECT SCOPE_IDENTITY();", connection);
+                if (!await _topicRepository.SubjectExistsAsync(assessment.SubjectId))
+                {
+                    throw new ArgumentException("Invalid SubjectId. The specified subject does not exist.");
+                }
 
-                command.Parameters.AddWithValue("@UserId", assessment.UserId);
-                command.Parameters.AddWithValue("@SubjectId", assessment.SubjectId);
-                command.Parameters.AddWithValue("@TopicId", (object?)assessment.TopicId ?? DBNull.Value);
-                command.Parameters.AddWithValue("@AssessmentName", assessment.AssessmentName);
-                command.Parameters.AddWithValue("@Description", (object?)assessment.Description ?? DBNull.Value);
-                command.Parameters.AddWithValue("@AssessmentType", assessment.AssessmentType);
-                command.Parameters.AddWithValue("@MaxScore", assessment.MaxScore);
-                command.Parameters.AddWithValue("@DueDate", (object?)assessment.DueDate ?? DBNull.Value);
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    var command = new SqlCommand(@"
+            INSERT INTO Assessments (
+                UserId, SubjectId, TopicId, AssessmentName, Description, 
+                AssessmentType, MaxScore, DueDate, IsCompleted, CreatedAt, UpdatedAt
+            ) 
+            VALUES (
+                @UserId, @SubjectId, @TopicId, @AssessmentName, @Description, 
+                @AssessmentType, @MaxScore, @DueDate, 0, GETDATE(), GETDATE()
+            );
+            SELECT SCOPE_IDENTITY();", connection);
 
-                connection.Open();
-                return Convert.ToInt32(command.ExecuteScalar());
+                    command.Parameters.AddWithValue("@UserId", assessment.UserId);
+                    command.Parameters.AddWithValue("@SubjectId", assessment.SubjectId);
+                    command.Parameters.AddWithValue("@TopicId", (object?)assessment.TopicId ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@AssessmentName", assessment.AssessmentName);
+                    command.Parameters.AddWithValue("@Description", (object?)assessment.Description ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@AssessmentType", assessment.AssessmentType);
+                    command.Parameters.AddWithValue("@MaxScore", assessment.MaxScore);
+                    command.Parameters.AddWithValue("@DueDate", (object?)assessment.DueDate ?? DBNull.Value);
+
+                    await connection.OpenAsync();
+                    return Convert.ToInt32(await command.ExecuteScalarAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                return -1;
             }
         }
+
+
 
         // Update Assessment (Partial Updates)
         public bool UpdateAssessment(int id, UpdateAssessmentDTO assessment)

@@ -35,6 +35,8 @@ namespace Study_Planner._DLL.Repository
             }
         }
 
+
+
         public async Task<bool> TopicExistsAsync(string topicName, int subjectId)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -47,6 +49,21 @@ namespace Study_Planner._DLL.Repository
 
                 cmd.Parameters.AddWithValue("@topicName", topicName);
                 cmd.Parameters.AddWithValue("@subjectId", subjectId);
+
+                return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
+            }
+        }
+        public async Task<bool> TopicExistsAsyncById(int id)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                var cmd = new SqlCommand(
+                    "SELECT COUNT(1) FROM Topics WHERE id = @id",
+                    conn);
+
+                cmd.Parameters.AddWithValue("@id", id);
 
                 return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
             }
@@ -113,6 +130,30 @@ namespace Study_Planner._DLL.Repository
                             TopicId = (int)reader["id"],
                             TopicName = reader["TopicName"].ToString(),
                             SubjectId = (int)reader["SubjectId"],
+                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public async Task<Topics> GetTopicBySubjectId(int subjectId)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand("SELECT * FROM Topics WHERE subjectId = @subjectId", conn);
+                cmd.Parameters.AddWithValue("@id", subjectId);
+
+                conn.Open();
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new Topics
+                        {
+                            TopicId = (int)reader["id"],
+                            TopicName = reader["TopicName"].ToString(),
                             EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
                         };
                     }

@@ -11,6 +11,7 @@ using Study_Planner.BLL.Services;
 using StudyPlanner.Application.Validators;
 using StudyPlanner.Application.Middleware;
 using System.Text;
+using Study_Planner.Application.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 
 builder.Services.AddSingleton(configuration);
 builder.Services.AddHttpContextAccessor();

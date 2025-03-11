@@ -23,9 +23,9 @@ namespace Study_Planner.BLL.Services
             return _repository.GetAllProgress();
         }
 
-        public ProgressDTO GetProgressById(int id)
+        public List<ProgressDTO> GetProgressByUserId(int userId)
         {
-            return _repository.GetProgressById(id);
+            return _repository.GetProgressByUserId(userId);
         }
 
         public int CreateProgress(ProgressDTO progress)

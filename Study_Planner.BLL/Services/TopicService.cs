@@ -28,7 +28,10 @@ namespace Study_Planner.BLL.Services
             return await _topicRepository.GetTopicByIdAsync(id);
         }
 
-
+        public async Task<Topics> GetTopicBySubjectId(int subjectId)
+        {
+            return await _topicRepository.GetTopicBySubjectId( subjectId);
+        }
         public async Task<int> AddTopicAsync(Topics topicDto)
         {
             // Check if SubjectId Exists

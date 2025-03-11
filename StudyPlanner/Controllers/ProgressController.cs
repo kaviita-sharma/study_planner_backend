@@ -22,10 +22,10 @@ namespace Study_Planner.API.Controllers
             return Ok(progressRecords);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("{userId}")]
+        public IActionResult GetByUserId(int userId)
         {
-            var progress = _service.GetProgressById(id);
+            var progress = _service.GetProgressByUserId(userId);
             if (progress == null)
                 return NotFound();
             return Ok(progress);
@@ -38,7 +38,7 @@ namespace Study_Planner.API.Controllers
                 return BadRequest(ModelState);
 
             var createdId = _service.CreateProgress(progress);
-            return CreatedAtAction(nameof(GetById), new { id = createdId }, progress);
+            return CreatedAtAction(nameof(GetByUserId), new { userId = createdId }, progress);
         }
 
         [HttpPut("{id}")]

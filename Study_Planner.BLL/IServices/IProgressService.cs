@@ -10,7 +10,7 @@ namespace Study_Planner.BLL.IServices
     public interface IProgressService
     {
         IEnumerable<ProgressDTO> GetAllProgress();
-        ProgressDTO GetProgressById(int id);
+        List<ProgressDTO> GetProgressByUserId(int userId);
         int CreateProgress(ProgressDTO progress);
         bool UpdateProgress(int id, ProgressDTO progress);
         bool DeleteProgress(int id);

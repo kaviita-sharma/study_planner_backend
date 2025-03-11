@@ -6,7 +6,7 @@ namespace Study_Planner.BLL.IServices
     {
         IEnumerable<AssessmentDTO> GetAllAssessments();
         AssessmentDTO GetAssessmentById(int id);
-        int CreateAssessment(CreateAssessmentDTO assessment);
+        Task<int> CreateAssessmentAsync(CreateAssessmentDTO assessment);
         bool UpdateAssessment(int id, UpdateAssessmentDTO assessment);
         bool DeleteAssessment(int id);
     }

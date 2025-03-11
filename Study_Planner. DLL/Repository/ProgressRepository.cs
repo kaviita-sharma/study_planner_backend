@@ -34,39 +34,47 @@ namespace Study_Planner._DLL.Repository
             return progressList;
         }
 
-        public ProgressDTO GetProgressById(int id)
+        public List<ProgressDTO> GetProgressByUserId(int userId)
         {
+            var progressList = new List<ProgressDTO>();
+
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = new SqlCommand("SELECT * FROM Progress WHERE Id = @Id", connection);
-                command.Parameters.AddWithValue("@Id", id);
+                var command = new SqlCommand("SELECT * FROM Progress WHERE UserId = @UserId", connection);
+                command.Parameters.AddWithValue("@UserId", userId);
+
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
-                    if (reader.Read())
+                    while (reader.Read()) // Use `while` instead of `if` to read multiple rows
                     {
-                        return MapReaderToProgress(reader);
+                        progressList.Add(MapReaderToProgress(reader));
                     }
                 }
             }
-            return null;
+
+            return progressList;
         }
+
 
         public int CreateProgress(ProgressDTO progress)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var command = new SqlCommand(@"
-                    INSERT INTO Progress (UserId, SubjectId, TopicId, SubTopicId, CompletionPercentage, 
-                    LastStudyDate, NextReviewDate, ConfidenceLevel, CreatedAt, UpdatedAt) 
-                    VALUES (@UserId, @SubjectId, @TopicId, @SubTopicId, @CompletionPercentage, 
-                    @LastStudyDate, @NextReviewDate, @ConfidenceLevel, GETDATE(), GETDATE());
-                    SELECT SCOPE_IDENTITY();", connection);
+            INSERT INTO Progress (UserId, SubjectId, TopicId, SubTopicId, CompletionPercentage, 
+            LastStudyDate, NextReviewDate, ConfidenceLevel, CreatedAt, UpdatedAt) 
+            VALUES (@UserId, @SubjectId, @TopicId, @SubTopicId, @CompletionPercentage, 
+            @LastStudyDate, @NextReviewDate, @ConfidenceLevel, GETDATE(), GETDATE());
+            ", connection);
 
                 AddParameters(command, progress);
                 connection.Open();
-                return Convert.ToInt32(command.ExecuteScalar());
+                command.ExecuteNonQuery();
             }
+
+            // Return the UserId since Progress is linked to the user
+            return progress.UserId;
         }
 
         public bool UpdateProgress(int id, ProgressDTO progress)

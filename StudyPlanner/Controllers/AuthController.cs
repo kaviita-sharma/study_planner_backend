@@ -63,7 +63,7 @@ namespace StudyPlanner.Application.Controllers
         /// <summary>
         /// Logs out the user by invalidating the token
         /// </summary>
-        //[Authorize]
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
