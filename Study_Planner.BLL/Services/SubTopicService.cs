@@ -32,9 +32,13 @@ namespace Study_Planner.BLL.Services
         {
             return await _subTopicRepository.GetSubTopicByTopicId(topicId);
         }
-        public async Task<int> AddSubTopicAsync(SubTopics subTopicDto)
+        public async Task<int> AddSubTopicAsync(int topicId,SubTopics subTopicDto)
         {
-            return await _subTopicRepository.AddSubTopicAsync(subTopicDto);
+            return await _subTopicRepository.AddSubTopicAsync(topicId,subTopicDto);
+        }
+        public async Task<bool> DeleteSubTopicAsync(int id)
+        {
+            return await _subTopicRepository.DeleteSubTopicAsync(id);
         }
     }
 }

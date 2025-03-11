@@ -11,7 +11,7 @@ namespace Study_Planner.Core.DTOs
     {
         public int? TopicId { get; set; }
         public string? TopicName { get; set; }
-        public int SubjectId { get; set; }
+        public int? SubjectId { get; set; }
         public int? OrderIndex { get; set; }
         public int? DifficultyLevel { get; set; } = 5;
         public int? EstimatedCompletionTime { get; set; } = 60;

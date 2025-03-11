@@ -32,7 +32,7 @@ namespace StudyPlanner.Application.Controllers
             return Ok(topic);
         }
 
-        [HttpGet("{subjectId}")]
+        [HttpGet("subject/{subjectId}")]
         public async Task<IActionResult> GetTopicBySubjectId(int subjectId)
         {
             var topic = await _topicService.GetTopicBySubjectId(subjectId);

@@ -18,6 +18,6 @@ namespace Study_Planner._DLL.IRepository
         Task<bool> TopicExistsAsync(string topicName, int subjectId);
         Task<bool> TopicExistsAsyncById(int id);
         Task<bool> SubTopicExistsAsync(string subTopicName, int topicId);
-        Task<Topics> GetTopicBySubjectId(int subjectId);
+        Task<List<Topics>> GetTopicBySubjectId(int subjectId);
     }
 }

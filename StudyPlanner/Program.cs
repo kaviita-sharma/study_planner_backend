@@ -67,6 +67,7 @@ builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
 builder.Services.AddScoped<IAssessmentsRepository, AssessmentsRepository>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+builder.Services.AddScoped<ISubTopicRepository,SubTopicRepository>();
 
 
 // Register Services
@@ -76,6 +77,7 @@ builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddScoped<IAssessmentsService, AssessmentsService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ISubTopicService, SubTopicService>();
 
 
 // Register Fluent Validation

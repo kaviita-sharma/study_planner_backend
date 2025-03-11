@@ -130,7 +130,10 @@ namespace Study_Planner._DLL.Repository
                             TopicId = (int)reader["id"],
                             TopicName = reader["TopicName"].ToString(),
                             SubjectId = (int)reader["SubjectId"],
-                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
+                            OrderIndex = (int)reader["OrderIndex"],
+                            DifficultyLevel = (int)reader["DifficultyLevel"],
+                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
+                            IsActive = (bool)reader["IsActive"],
                         };
                     }
                 }
@@ -138,29 +141,38 @@ namespace Study_Planner._DLL.Repository
             return null;
         }
 
-        public async Task<Topics> GetTopicBySubjectId(int subjectId)
+        public async Task<List<Topics>> GetTopicBySubjectId(int subjectId)
         {
+            var topics = new List<Topics>();
+
             using (var conn = new SqlConnection(_connectionString))
             {
                 var cmd = new SqlCommand("SELECT * FROM Topics WHERE subjectId = @subjectId", conn);
-                cmd.Parameters.AddWithValue("@id", subjectId);
+                cmd.Parameters.AddWithValue("@subjectId", subjectId);  // Fixed parameter key
 
-                conn.Open();
+                await conn.OpenAsync();
+
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    if (await reader.ReadAsync())
+                    while (await reader.ReadAsync())
                     {
-                        return new Topics
+                        topics.Add(new Topics
                         {
                             TopicId = (int)reader["id"],
                             TopicName = reader["TopicName"].ToString(),
-                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
-                        };
+                            SubjectId = (int)reader["SubjectId"],
+                            OrderIndex = (int)reader["OrderIndex"],
+                            DifficultyLevel = (int)reader["DifficultyLevel"],
+                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
+                            IsActive = (bool)reader["IsActive"],
+                        });
                     }
                 }
             }
-            return null;
+
+            return topics;
         }
+
 
         public async Task<int> AddTopicAsync(Topics topicDto)
         {

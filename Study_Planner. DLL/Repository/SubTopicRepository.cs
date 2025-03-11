@@ -19,7 +19,7 @@ namespace Study_Planner._DLL.Repository
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<int> AddSubTopicAsync(SubTopics subTopicDto)
+        public async Task<int> AddSubTopicAsync(int topicId,SubTopics subTopicDto)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -37,7 +37,7 @@ namespace Study_Planner._DLL.Repository
                             conn, transaction);
 
                         cmd.Parameters.AddWithValue("@subTopicName", subTopicDto.SubTopicName);
-                        cmd.Parameters.AddWithValue("@subjectId", subTopicDto.TopicId);
+                        cmd.Parameters.AddWithValue("@topicId", topicId);
                         cmd.Parameters.AddWithValue("@orderIndex", subTopicDto.OrderIndex);
                         cmd.Parameters.AddWithValue("@difficultyLevel", subTopicDto.DifficultyLevel);
                         cmd.Parameters.AddWithValue("@estimatedCompletionTime", subTopicDto.EstimatedCompletionTime);
@@ -72,11 +72,12 @@ namespace Study_Planner._DLL.Repository
                         subTopics.Add(new SubTopics
                         {
                             id = (int)reader["id"],
-                            SubTopicName = reader["TopicName"].ToString(),
+                            SubTopicName = reader["SubTopicName"].ToString(),
                             TopicId = (int)reader["TopicId"],
                             OrderIndex = (int)reader["OrderIndex"],
                             DifficultyLevel = (int)reader["DifficultyLevel"],
-                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
+                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
+                            IsActive = (bool)reader["IsActive"]
                         });
                     }
                 }
@@ -88,7 +89,7 @@ namespace Study_Planner._DLL.Repository
         {
             using (var conn = new SqlConnection(_connectionString))
             {
-                var cmd = new SqlCommand("SELECT * FROM Topics WHERE id = @id", conn);
+                var cmd = new SqlCommand("SELECT * FROM SubTopics WHERE id = @id", conn);
                 cmd.Parameters.AddWithValue("@id", id);
 
                 conn.Open();
@@ -99,9 +100,12 @@ namespace Study_Planner._DLL.Repository
                         return new SubTopics
                         {
                             id = (int)reader["id"],
-                            SubTopicName = reader["TopicName"].ToString(),
+                            SubTopicName = reader["SubTopicName"].ToString(),
                             TopicId = (int)reader["TopicId"],
-                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
+                            OrderIndex = (int)reader["OrderIndex"],
+                            DifficultyLevel = (int)reader["DifficultyLevel"],
+                            EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
+                            IsActive = (bool)reader["IsActive"]
                         };
                     }
                 }
@@ -127,16 +131,28 @@ namespace Study_Planner._DLL.Repository
                             subTopics.Add(new SubTopics
                             {
                                 id = (int)reader["id"],
-                                SubTopicName = reader["TopicName"].ToString(),
+                                SubTopicName = reader["SubTopicName"].ToString(),
                                 TopicId = (int)reader["TopicId"],
                                 OrderIndex = (int)reader["OrderIndex"],
                                 DifficultyLevel = (int)reader["DifficultyLevel"],
-                                EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"]
+                                EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
+                                IsActive = (bool)reader["IsActive"]
                             });
                         }
                     }
                 }
                 return subTopics;
+            }
+        }
+        public async Task<bool> DeleteSubTopicAsync(int id)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var cmd = new SqlCommand("DELETE FROM SubTopics WHERE id = @id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                conn.Open();
+                return await cmd.ExecuteNonQueryAsync() > 0;
             }
         }
     }

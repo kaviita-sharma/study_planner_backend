@@ -8,6 +8,7 @@ namespace Study_Planner.Core.DTOs
 {
     public class Subjects
     {
+        public int? id {  get; set; }
         public string? SubjectName { get; set; }
         public int? DifficultyLevel { get; set; }
         public int? Priority { get; set; }
