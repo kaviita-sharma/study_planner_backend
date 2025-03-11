@@ -39,21 +39,11 @@ namespace Study_Planner._DLL.Service
             }
 
             // Validate required fields
-            if (string.IsNullOrEmpty(subjectDto.SubjectName) || subjectDto.Topic == null)
+            if (string.IsNullOrEmpty(subjectDto.SubjectName))
             {
                 throw new ArgumentException("SubjectName and Topic are required fields.");
-            }
-            // Validation: Ensure `status` is valid
-            if (!IsValidStatus(subjectDto.Status))
-            {
-                throw new ArgumentException("Invalid status provided. Allowed values: 'Started', 'Inprogress', 'ToDo', 'Ended'.");
             }
 
-            // Validate required fields
-            if (string.IsNullOrEmpty(subjectDto.SubjectName) || subjectDto.Topic == null)
-            {
-                throw new ArgumentException("SubjectName and Topic are required fields.");
-            }
 
             // Additional Validations for Numeric Fields
             if (subjectDto.DifficultyLevel <= 0 || subjectDto.DifficultyLevel > 10)
@@ -71,40 +61,38 @@ namespace Study_Planner._DLL.Service
                 throw new ArgumentException("EstimatedCompletionTime must be greater than zero.");
             }
 
-            // Topic Validations
-            if (subjectDto.Topic.OrderIndex <= 0)
+            if (subjectDto.Topic != null)
             {
-                throw new ArgumentException("Topic OrderIndex must be greater than zero.");
-            }
-
-            if (subjectDto.Topic.DifficultyLevel <= 0 || subjectDto.Topic.DifficultyLevel > 10)
-            {
-                throw new ArgumentException("Topic DifficultyLevel must be between 1 and 10.");
-            }
-
-            if (subjectDto.Topic.EstimatedCompletionTime <= 0)
-            {
-                throw new ArgumentException("Topic EstimatedCompletionTime must be greater than zero.");
-            }
-
-            // SubTopic Validations
-            if (subjectDto.Topic.SubTopics != null)
-            {
-                foreach (var subtopic in subjectDto.Topic.SubTopics)
+                // Topic Validations
+                if (subjectDto.Topic.OrderIndex <= 0)
                 {
-                    if (subtopic.OrderIndex <= 0)
-                    {
-                        throw new ArgumentException("Each SubTopic OrderIndex must be greater than zero.");
-                    }
+                    throw new ArgumentException("Topic OrderIndex must be greater than zero.");
+                }
 
-                    if (subtopic.DifficultyLevel <= 0 || subtopic.DifficultyLevel > 10)
-                    {
-                        throw new ArgumentException("Each SubTopic DifficultyLevel must be between 1 and 10.");
-                    }
+                if (subjectDto.Topic.DifficultyLevel <= 0 || subjectDto.Topic.DifficultyLevel > 10)
+                {
+                    throw new ArgumentException("Topic DifficultyLevel must be between 1 and 10.");
+                }
 
-                    if (subtopic.EstimatedCompletionTime <= 0)
+                // SubTopic Validations
+                if (subjectDto.Topic.SubTopics != null)
+                {
+                    foreach (var subtopic in subjectDto.Topic.SubTopics)
                     {
-                        throw new ArgumentException("Each SubTopic EstimatedCompletionTime must be greater than zero.");
+                        if (subtopic.OrderIndex <= 0)
+                        {
+                            throw new ArgumentException("Each SubTopic OrderIndex must be greater than zero.");
+                        }
+
+                        if (subtopic.DifficultyLevel <= 0 || subtopic.DifficultyLevel > 10)
+                        {
+                            throw new ArgumentException("Each SubTopic DifficultyLevel must be between 1 and 10.");
+                        }
+
+                        if (subtopic.EstimatedCompletionTime <= 0)
+                        {
+                            throw new ArgumentException("Each SubTopic EstimatedCompletionTime must be greater than zero.");
+                        }
                     }
                 }
             }

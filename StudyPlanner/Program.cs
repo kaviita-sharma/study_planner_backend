@@ -11,6 +11,7 @@ using Study_Planner.BLL.Services;
 using StudyPlanner.Application.Validators;
 using StudyPlanner.Application.Middleware;
 using System.Text;
+using Study_Planner.Application.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
 builder.Services.AddSingleton(configuration);
 builder.Services.AddHttpContextAccessor();
 
@@ -65,6 +67,7 @@ builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
 builder.Services.AddScoped<IAssessmentsRepository, AssessmentsRepository>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+builder.Services.AddScoped<ISubTopicRepository,SubTopicRepository>();
 
 
 // Register Services
@@ -74,6 +77,7 @@ builder.Services.AddScoped<IStudySessionService, StudySessionService>();
 builder.Services.AddScoped<IAssessmentsService, AssessmentsService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ISubTopicService, SubTopicService>();
 
 
 // Register Fluent Validation

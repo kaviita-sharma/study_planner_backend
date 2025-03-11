@@ -14,5 +14,6 @@ namespace Study_Planner.BLL.IServices
         Task<int> AddTopicAsync(Topics topicDto);
         Task<bool> UpdateTopicAsync(int id, Topics topicDto);
         Task<bool> DeleteTopicAsync(int id);
+        Task<List<Topics>> GetTopicBySubjectId(int subjectId);
     }
 }

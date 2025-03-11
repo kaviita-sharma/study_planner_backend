@@ -16,6 +16,8 @@ namespace Study_Planner._DLL.IRepository
         Task<bool> DeleteTopicAsync(int id);
         Task<bool> SubjectExistsAsync(int subjectId);
         Task<bool> TopicExistsAsync(string topicName, int subjectId);
+        Task<bool> TopicExistsAsyncById(int id);
         Task<bool> SubTopicExistsAsync(string subTopicName, int topicId);
+        Task<List<Topics>> GetTopicBySubjectId(int subjectId);
     }
 }

@@ -8,6 +8,8 @@ using Study_Planner._DLL.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using Study_Planner._DLL.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Study_Planner.Application.Controllers
 {
@@ -16,16 +18,22 @@ namespace Study_Planner.Application.Controllers
     public class AssessmentsController : ControllerBase
     {
         private readonly IAssessmentsService _service;
+        private readonly ITopicRepository _topicRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IValidator<CreateAssessmentDTO> _createValidator;
         private readonly IValidator<UpdateAssessmentDTO> _updateValidator;
 
         public AssessmentsController(IAssessmentsService service,
             IValidator<CreateAssessmentDTO> createValidator,
+            ITopicRepository topicRepository,
+            IUserRepository userRepository,
             IValidator<UpdateAssessmentDTO> updateValidator)
         {
             _service = service;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _topicRepository = topicRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -42,6 +50,7 @@ namespace Study_Planner.Application.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -59,8 +68,9 @@ namespace Study_Planner.Application.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
-        public IActionResult Create([FromBody] CreateAssessmentDTO assessment)
+        public async Task<IActionResult> Create([FromBody] CreateAssessmentDTO assessment)
         {
             var validationResult = _createValidator.Validate(assessment);
             if (!validationResult.IsValid)
@@ -68,7 +78,23 @@ namespace Study_Planner.Application.Controllers
 
             try
             {
-                var createdId = _service.CreateAssessment(assessment);
+                var user = await _userRepository.GetByIdAsync(assessment.UserId);
+                if (user == null)
+                {
+                    throw new ArgumentException("Invalid UserId. The specified user does not exist.");
+                }
+
+                if (!await _topicRepository.SubjectExistsAsync(assessment.SubjectId))
+                {
+                    throw new ArgumentException("Invalid SubjectId. The specified subject does not exist.");
+                }
+
+                if(!await _topicRepository.TopicExistsAsyncById(assessment.TopicId ?? -1))
+                {
+                    throw new ArgumentException("Invalid TopicId. The specified topic does not exist.");
+                }
+
+                var createdId = _service.CreateAssessmentAsync(assessment);
                 return CreatedAtAction(nameof(GetById), new { id = createdId }, assessment);
             }
             catch (Exception ex)

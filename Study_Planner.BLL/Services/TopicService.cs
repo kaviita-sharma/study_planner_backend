@@ -28,18 +28,21 @@ namespace Study_Planner.BLL.Services
             return await _topicRepository.GetTopicByIdAsync(id);
         }
 
-
+        public async Task<List<Topics>> GetTopicBySubjectId(int subjectId)
+        {
+            return await _topicRepository.GetTopicBySubjectId( subjectId);
+        }
         public async Task<int> AddTopicAsync(Topics topicDto)
         {
             // Check if SubjectId Exists
-            var subjectExists = await _topicRepository.SubjectExistsAsync(topicDto.SubjectId);
+            var subjectExists = await _topicRepository.SubjectExistsAsync(topicDto.SubjectId??-1);
             if (!subjectExists)
             {
                 throw new Exception("Subject not found.");
             }
 
             //Check if Topic Name Already Exists
-            var topicExists = await _topicRepository.TopicExistsAsync(topicDto.TopicName, topicDto.SubjectId);
+            var topicExists = await _topicRepository.TopicExistsAsync(topicDto.TopicName, topicDto.SubjectId??-1);
             if (topicExists)
             {
                 throw new Exception("Topic already exists.");
@@ -64,7 +67,7 @@ namespace Study_Planner.BLL.Services
                 //Check for Duplicate SubTopics
                 foreach (var subTopic in topicDto.SubTopics)
                 {
-                    var subTopicExists = await _topicRepository.SubTopicExistsAsync(subTopic.SubTopicName, topicDto.SubjectId);
+                    var subTopicExists = await _topicRepository.SubTopicExistsAsync(subTopic.SubTopicName, topicDto.SubjectId??-1);
                     if (subTopicExists)
                     {
                         throw new Exception($"SubTopic '{subTopic.SubTopicName}' already exists.");

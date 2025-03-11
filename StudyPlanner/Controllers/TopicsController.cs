@@ -32,6 +32,16 @@ namespace StudyPlanner.Application.Controllers
             return Ok(topic);
         }
 
+        [HttpGet("subject/{subjectId}")]
+        public async Task<IActionResult> GetTopicBySubjectId(int subjectId)
+        {
+            var topic = await _topicService.GetTopicBySubjectId(subjectId);
+            if (topic == null)
+                return NotFound(new { error = $"Topic {subjectId} not found" });
+
+            return Ok(topic);
+
+        }
         [HttpPost]
         public async Task<IActionResult> AddTopic([FromBody] Topics topicDto)
         {

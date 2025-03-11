@@ -18,11 +18,13 @@ namespace Study_Planner._DLL.Repository
     {
         private readonly string _connectionString;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ITopicRepository _topicRepository;
 
-        public SubjectsRepository(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public SubjectsRepository(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ITopicRepository topicRepository)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _httpContextAccessor = httpContextAccessor;
+            _topicRepository = topicRepository;
         }
 
         public async Task<int> AddSubjectWithDetailsAsync(Subjects subjectDto, string userId="3")
@@ -129,11 +131,14 @@ namespace Study_Planner._DLL.Repository
                         {
                             subjects.Add(new Subjects
                             {
+                                id = reader.GetInt32("id"),
                                 SubjectName = reader.GetString("SubjectName"),
                                 DifficultyLevel = reader.GetInt32("DifficultyLevel"),
                                 Priority = reader.GetInt32("Priority"),
                                 EstimatedCompletionTime = reader["EstimatedCompletionTime"] as int?,
-                                Status = reader.GetString("Status")
+                                Status = reader.GetString("Status"),
+                                StartDate = reader["StartDate"] as DateTime?, 
+                                EndDate = reader["EndDate"] as DateTime?
                             });
                         }
                     }
@@ -157,14 +162,19 @@ namespace Study_Planner._DLL.Repository
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new Subjects
+                            var subjects =  new Subjects
                             {
+                                id = reader.GetInt32("id"),
                                 SubjectName = reader.GetString("SubjectName"),
                                 DifficultyLevel = reader.GetInt32("DifficultyLevel"),
                                 Priority = reader.GetInt32("Priority"),
                                 EstimatedCompletionTime = reader["EstimatedCompletionTime"] as int?,
-                                Status = reader.GetString("Status")
+                                Status = reader.GetString("Status"),
+                                StartDate = reader["StartDate"] as DateTime?,
+                                EndDate = reader["EndDate"] as DateTime?
                             };
+
+                            return subjects;
                         }
                     }
                 }

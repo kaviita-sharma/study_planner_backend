@@ -25,9 +25,9 @@ namespace Study_Planner.BLL.Services
             return _repository.GetAssessmentById(id);
         }
 
-        public int CreateAssessment(CreateAssessmentDTO assessment)
+        public Task<int> CreateAssessmentAsync(CreateAssessmentDTO assessment)
         {
-            return _repository.CreateAssessment(assessment);
+            return _repository.CreateAssessmentAsync(assessment);
         }
 
         public bool UpdateAssessment(int id, UpdateAssessmentDTO assessment)
