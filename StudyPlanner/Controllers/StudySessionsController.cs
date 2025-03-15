@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Study_Planner._DLL.IRepository;
 using Study_Planner.BLL.IServices;
 using Study_Planner.Core.DTOs;
+using System.Security.Claims;
 
 namespace StudyPlanner.Application.Controllers
 {
@@ -19,21 +21,23 @@ namespace StudyPlanner.Application.Controllers
             _topicRepository = topicRepository;
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateStudySession([FromBody] StudySessionDto studySessionDto)
+        public async Task<IActionResult> CreateStudySession([FromBody] StudySessionDto studySessionDto, [FromQuery] int? subTopicId)
         {
             try
             {
-                if (!await _topicRepository.SubjectExistsAsync(studySessionDto.SubjectId ?? -1))
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
                 {
-                    throw new Exception("No such subject exists");
+                    return Unauthorized(new { Message = "Invalid token or user ID missing." });
                 }
-                var topic = await _topicRepository.GetTopicByIdAsync(studySessionDto.TopicId ?? -1);
-                if (topic == null)
+
+                if (!int.TryParse(userIdClaim, out int userId))
                 {
-                    throw new Exception("No such topic exists");
+                    return BadRequest(new { Message = "Invalid user ID format." });
                 }
-                var createdSession = await _studySessionService.CreateStudySessionAsync(studySessionDto);
+                var createdSession = await _studySessionService.CreateStudySessionAsync(userId,studySessionDto, subTopicId);
                 return CreatedAtAction(nameof(GetStudySessionById), new { id = createdSession.Id }, createdSession);
             } catch (Exception ex) {
                 throw new Exception(ex.Message);

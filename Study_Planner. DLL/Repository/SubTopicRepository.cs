@@ -77,7 +77,8 @@ namespace Study_Planner._DLL.Repository
                             OrderIndex = (int)reader["OrderIndex"],
                             DifficultyLevel = (int)reader["DifficultyLevel"],
                             EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
-                            IsActive = (bool)reader["IsActive"]
+                            IsActive = (bool)reader["IsActive"],
+                            sessionId = reader["sessionId"] == DBNull.Value ? (int?)null : (int)reader["sessionId"]
                         });
                     }
                 }
@@ -105,7 +106,8 @@ namespace Study_Planner._DLL.Repository
                             OrderIndex = (int)reader["OrderIndex"],
                             DifficultyLevel = (int)reader["DifficultyLevel"],
                             EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
-                            IsActive = (bool)reader["IsActive"]
+                            IsActive = (bool)reader["IsActive"],
+                            sessionId = reader["sessionId"] == DBNull.Value ? (int?)null : (int)reader["sessionId"]
                         };
                     }
                 }
@@ -136,7 +138,8 @@ namespace Study_Planner._DLL.Repository
                                 OrderIndex = (int)reader["OrderIndex"],
                                 DifficultyLevel = (int)reader["DifficultyLevel"],
                                 EstimatedCompletionTime = (int)reader["EstimatedCompletionTime"],
-                                IsActive = (bool)reader["IsActive"]
+                                IsActive = (bool)reader["IsActive"],
+                                sessionId = reader["sessionId"] == DBNull.Value ? (int?)null : (int)reader["sessionId"]
                             });
                         }
                     }
@@ -155,5 +158,66 @@ namespace Study_Planner._DLL.Repository
                 return await cmd.ExecuteNonQueryAsync() > 0;
             }
         }
+
+        public async Task<bool> UpdateSubTopicByIdAsync(int id, SubTopics updateDto)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var updates = new List<string>();
+                var cmd = new SqlCommand();
+
+                if (!string.IsNullOrEmpty(updateDto.SubTopicName))
+                {
+                    updates.Add("SubTopicName = @SubTopicName");
+                    cmd.Parameters.AddWithValue("@SubTopicName", updateDto.SubTopicName);
+                }
+
+                if (updateDto.EstimatedCompletionTime.HasValue)
+                {
+                    updates.Add("EstimatedCompletionTime = @estimatedCompletionTime");
+                    cmd.Parameters.AddWithValue("@estimatedCompletionTime", updateDto.EstimatedCompletionTime);
+                }
+
+                if (updateDto.DifficultyLevel.HasValue)
+                {
+                    updates.Add("DifficultyLevel = @difficultyLevel");
+                    cmd.Parameters.AddWithValue("@difficultyLevel", updateDto.DifficultyLevel);
+                }
+
+                if (updateDto.OrderIndex.HasValue)
+                {
+                    updates.Add("OrderIndex = @orderIndex");
+                    cmd.Parameters.AddWithValue("@orderIndex", updateDto.OrderIndex);
+                }
+
+                if (updateDto.TopicId > 0)
+                {
+                    updates.Add("TopicId = @TopicId");
+                    cmd.Parameters.AddWithValue("@TopicId", updateDto.TopicId);
+                }
+
+                if (updateDto.IsActive.HasValue)
+                {
+                    updates.Add("IsActive = @isActive");
+                    cmd.Parameters.AddWithValue("@isActive", updateDto.IsActive);
+                }
+
+                // If no properties to update, return false
+                if (!updates.Any())
+                {
+                    throw new ArgumentException("No valid fields provided for update.");
+                }
+
+                // Build dynamic query
+                cmd.CommandText = $"UPDATE SubTopics SET {string.Join(", ", updates)} WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", id);
+
+                cmd.Connection = conn;
+                conn.Open();
+
+                return await cmd.ExecuteNonQueryAsync() > 0;
+            }
+        }
+
     }
 }

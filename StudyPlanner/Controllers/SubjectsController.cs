@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Study_Planner._DLL.Service;
 using Study_Planner.BLL.IServices;
 using Study_Planner.Core.DTOs;
+using System.Security.Claims;
 
 namespace StudyPlanner.Application.Controllers
 {
@@ -16,12 +18,24 @@ namespace StudyPlanner.Application.Controllers
             _subjectsService = subjectsService;
         }
 
+        [Authorize]
         [HttpPost("AddSubjectWithDetails")]
         public async Task<IActionResult> AddSubjectWithDetails([FromBody] Subjects subjectDto)
         {
             try
             {
-                var result = await _subjectsService.AddSubjectWithDetailsAsync(subjectDto);
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return Unauthorized(new { Message = "Invalid token or user ID missing." });
+                }
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                {
+                    return BadRequest(new { Message = "Invalid user ID format." });
+                }
+
+                var result = await _subjectsService.AddSubjectWithDetailsAsync(subjectDto,userId);
                 return Ok(new { SubjectId = result, Message = "Subject added successfully." });
             }
             catch (UnauthorizedAccessException)
@@ -43,6 +57,7 @@ namespace StudyPlanner.Application.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllSubjects()
         {
@@ -50,6 +65,7 @@ namespace StudyPlanner.Application.Controllers
             return Ok(subjects);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSubjectById(int id)
         {
@@ -58,6 +74,7 @@ namespace StudyPlanner.Application.Controllers
             return Ok(subject);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubject(int id, [FromBody] UpdateSubjects subjectDto)
         {
@@ -66,6 +83,7 @@ namespace StudyPlanner.Application.Controllers
             return Ok(new { message = "Subject updated successfully" });
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubject(int id)
         {

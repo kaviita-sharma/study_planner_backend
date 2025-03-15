@@ -61,43 +61,45 @@ namespace Study_Planner._DLL.Repository
 
                             subjectId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
                         }
-
-                        int topicId;
-                        using (SqlCommand cmd = new SqlCommand(@"
+                        if (subjectDto.Topic != null)
+                        {
+                            int topicId;
+                            using (SqlCommand cmd = new SqlCommand(@"
                             INSERT INTO Topics (TopicName, SubjectId, OrderIndex, DifficultyLevel, EstimatedCompletionTime, CreatedAt, UpdatedAt)
                             VALUES (@TopicName, @SubjectId, @OrderIndex, 
                             ISNULL(@DifficultyLevel, 5), 
                             ISNULL(@EstimatedCompletionTime, 60), GETDATE(), GETDATE());
                             SELECT SCOPE_IDENTITY();", conn, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("@TopicName", subjectDto.Topic.TopicName);
-                            cmd.Parameters.AddWithValue("@SubjectId", subjectId);
-                            cmd.Parameters.AddWithValue("@OrderIndex", subjectDto.Topic.OrderIndex);
-                            cmd.Parameters.AddWithValue("@DifficultyLevel", subjectDto.Topic.DifficultyLevel ?? 5);
-                            cmd.Parameters.AddWithValue("@EstimatedCompletionTime", subjectDto.Topic.EstimatedCompletionTime ?? 60);
-
-                            topicId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
-                        }
-
-                        if (subjectDto.Topic.SubTopics != null)
-                        {
-                            foreach (var subtopic in subjectDto.Topic.SubTopics)
                             {
-                                using (SqlCommand cmd = new SqlCommand(@"
+                                cmd.Parameters.AddWithValue("@TopicName", subjectDto.Topic.TopicName);
+                                cmd.Parameters.AddWithValue("@SubjectId", subjectId);
+                                cmd.Parameters.AddWithValue("@OrderIndex", subjectDto.Topic.OrderIndex);
+                                cmd.Parameters.AddWithValue("@DifficultyLevel", subjectDto.Topic.DifficultyLevel ?? 5);
+                                cmd.Parameters.AddWithValue("@EstimatedCompletionTime", subjectDto.Topic.EstimatedCompletionTime ?? 60);
+
+                                topicId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                            }
+
+                            if (subjectDto.Topic.SubTopics != null)
+                            {
+                                foreach (var subtopic in subjectDto.Topic.SubTopics)
+                                {
+                                    using (SqlCommand cmd = new SqlCommand(@"
                                     INSERT INTO SubTopics (SubTopicName, TopicId, OrderIndex, DifficultyLevel, EstimatedCompletionTime, IsActive, CreatedAt, UpdatedAt)
                                     VALUES (@SubTopicName, @TopicId, @OrderIndex, 
                                     ISNULL(@DifficultyLevel, 5), 
                                     ISNULL(@EstimatedCompletionTime, 60), 
                                     @IsActive, GETDATE(), GETDATE());", conn, transaction))
-                                {
-                                    cmd.Parameters.AddWithValue("@SubTopicName", subtopic.SubTopicName);
-                                    cmd.Parameters.AddWithValue("@TopicId", topicId);
-                                    cmd.Parameters.AddWithValue("@OrderIndex", subtopic.OrderIndex);
-                                    cmd.Parameters.AddWithValue("@DifficultyLevel", subtopic.DifficultyLevel ?? 5);
-                                    cmd.Parameters.AddWithValue("@EstimatedCompletionTime", subtopic.EstimatedCompletionTime ?? 60);
-                                    cmd.Parameters.AddWithValue("@IsActive", subtopic.IsActive);
+                                    {
+                                        cmd.Parameters.AddWithValue("@SubTopicName", subtopic.SubTopicName);
+                                        cmd.Parameters.AddWithValue("@TopicId", topicId);
+                                        cmd.Parameters.AddWithValue("@OrderIndex", subtopic.OrderIndex);
+                                        cmd.Parameters.AddWithValue("@DifficultyLevel", subtopic.DifficultyLevel ?? 5);
+                                        cmd.Parameters.AddWithValue("@EstimatedCompletionTime", subtopic.EstimatedCompletionTime ?? 60);
+                                        cmd.Parameters.AddWithValue("@IsActive", subtopic.IsActive);
 
-                                    await cmd.ExecuteNonQueryAsync();
+                                        await cmd.ExecuteNonQueryAsync();
+                                    }
                                 }
                             }
                         }

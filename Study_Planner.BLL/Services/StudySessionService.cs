@@ -13,9 +13,9 @@ namespace Study_Planner.BLL.Services
             _studySessionRepository = studySessionRepository;
         }
 
-        public async Task<StudySessionDto> CreateStudySessionAsync(StudySessionDto studySessionDto)
+        public async Task<StudySessionDto> CreateStudySessionAsync(int userId,StudySessionDto studySessionDto, int? subTopicId)
         {
-            return await _studySessionRepository.CreateStudySessionAsync(studySessionDto);
+            return await _studySessionRepository.CreateStudySessionAsync(userId, studySessionDto, subTopicId);
         }
 
         public async Task<IEnumerable<StudySessionDto>> GetAllStudySessionsAsync()

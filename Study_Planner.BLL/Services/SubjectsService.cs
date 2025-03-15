@@ -20,13 +20,9 @@ namespace Study_Planner._DLL.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<int> AddSubjectWithDetailsAsync(Subjects subjectDto)
+        public async Task<int> AddSubjectWithDetailsAsync(Subjects subjectDto, int uId)
         {
-            // Extract User ID from token
-            //var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
-            //var userId = ExtractUserIdFromToken(token);
-            var userId = "3";
-
+            string userId = uId.ToString();
             if (string.IsNullOrEmpty(userId))
             {
                 throw new UnauthorizedAccessException("User not authorized.");
