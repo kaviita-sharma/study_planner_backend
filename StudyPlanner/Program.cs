@@ -67,7 +67,7 @@ builder.Services.AddScoped<IStudySessionRepository, StudySessionRepository>();
 builder.Services.AddScoped<IAssessmentsRepository, AssessmentsRepository>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
-builder.Services.AddScoped<ISubTopicRepository,SubTopicRepository>();
+builder.Services.AddScoped<ISubTopicRepository, SubTopicRepository>();
 
 
 // Register Services

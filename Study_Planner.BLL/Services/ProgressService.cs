@@ -17,6 +17,10 @@ namespace Study_Planner.BLL.Services
         {
             _repository = repository;
         }
+        public IEnumerable<EnrichedProgressDTO> GetAllEnrichedProgress()
+        {
+            return _repository.GetAllEnrichedProgress();
+        }
 
         public IEnumerable<ProgressDTO> GetAllProgress()
         {

@@ -17,12 +17,17 @@ namespace Study_Planner.API.Controllers
             _service = service;
         }
 
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-          //  var progressRecords = _service.GetAllProgress();
-            //return Ok(progressRecords);
-        //
+        [HttpGet("enriched")]
+        public IActionResult GetAllEnrichedProgress()
+        {
+            var enrichedProgressRecords = _service.GetAllEnrichedProgress();
+            if (!enrichedProgressRecords.Any())
+            {
+                return NotFound(new { message = "No enriched progress records found." });
+            }
+            return Ok(enrichedProgressRecords);
+        }
+
         [Authorize]
         [HttpGet]
         public IActionResult GetByUserId()

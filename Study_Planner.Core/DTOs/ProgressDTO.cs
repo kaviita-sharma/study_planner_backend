@@ -18,6 +18,13 @@
             public DateTime CreatedAt { get; set; }
             public DateTime UpdatedAt { get; set; }
         }
+        public class EnrichedProgressDTO : ProgressDTO
+        {
+            public string SubjectName { get; set; }
+            public string TopicName { get; set; }
+            public string SubTopicName { get; set; }
+        }
+
     }
 
 }

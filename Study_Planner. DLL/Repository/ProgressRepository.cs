@@ -13,7 +13,56 @@ namespace Study_Planner._DLL.Repository
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+        public IEnumerable<EnrichedProgressDTO> GetAllEnrichedProgress()
+        {
+            var enrichedProgressList = new List<EnrichedProgressDTO>();
 
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = @"
+            SELECT p.*, 
+                   s.SubjectName, 
+                   t.TopicName, 
+                   st.SubTopicName
+            FROM Progress p
+            LEFT JOIN Subjects s ON p.SubjectId = s.Id
+            LEFT JOIN Topics t ON p.TopicId = t.Id
+            LEFT JOIN SubTopics st ON p.SubTopicId = st.Id";
+
+                var command = new SqlCommand(query, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        enrichedProgressList.Add(MapReaderToEnrichedProgress(reader));
+                    }
+                }
+            }
+
+            return enrichedProgressList;
+        }
+
+        private EnrichedProgressDTO MapReaderToEnrichedProgress(SqlDataReader reader)
+        {
+            return new EnrichedProgressDTO
+            {
+                Id = (int)reader["Id"],
+                UserId = (int)reader["UserId"],
+                SubjectId = (int)reader["SubjectId"],
+                SubjectName = reader["SubjectName"]?.ToString(),
+                TopicId = reader["TopicId"] as int?,
+                TopicName = reader["TopicName"]?.ToString(),
+                SubTopicId = reader["SubTopicId"] as int?,
+                SubTopicName = reader["SubTopicName"]?.ToString(),
+                CompletionPercentage = (decimal)reader["CompletionPercentage"],
+                LastStudyDate = reader["LastStudyDate"] as DateTime?,
+                NextReviewDate = reader["NextReviewDate"] as DateTime?,
+                ConfidenceLevel = reader["ConfidenceLevel"] as int?,
+                CreatedAt = (DateTime)reader["CreatedAt"],
+                UpdatedAt = (DateTime)reader["UpdatedAt"]
+            };
+        }
         public IEnumerable<ProgressDTO> GetAllProgress()
         {
             var progressList = new List<ProgressDTO>();

@@ -52,7 +52,7 @@ namespace Study_Planner.Application.Filters
                     return;
                 }
 
-                context.HttpContext.Items["userId"] = int.Parse(userIdClaim); // Store userId for later use
+                context.HttpContext.Items["userId"] = int.Parse(userIdClaim); 
             }
             catch (Exception ex)
             {

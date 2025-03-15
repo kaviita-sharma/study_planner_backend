@@ -9,6 +9,7 @@ namespace Study_Planner.BLL.IServices
 {
     public interface IProgressService
     {
+        IEnumerable<EnrichedProgressDTO> GetAllEnrichedProgress();
         IEnumerable<ProgressDTO> GetAllProgress();
         List<ProgressDTO> GetProgressByUserId(int userId);
         int CreateProgress(ProgressDTO progress);
