@@ -12,7 +12,6 @@ using StudyPlanner.Application.Validators;
 using StudyPlanner.Application.Middleware;
 using System.Text;
 using Study_Planner.Application.Filters;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Load configuration
@@ -69,7 +68,6 @@ builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 builder.Services.AddScoped<ISubTopicRepository, SubTopicRepository>();
 
-
 // Register Services
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -78,6 +76,7 @@ builder.Services.AddScoped<IAssessmentsService, AssessmentsService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<ISubTopicService, SubTopicService>();
+
 
 
 // Register Fluent Validation

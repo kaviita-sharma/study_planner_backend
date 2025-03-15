@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Study_Planner._DLL.IRepository;
+using Study_Planner.Core.DTOs;
 using Study_Planner.Core.DTOs.Study_Planner.Core.DTOs;
 
 namespace Study_Planner._DLL.Repository
@@ -167,7 +168,104 @@ namespace Study_Planner._DLL.Repository
             command.Parameters.AddWithValue("@NextReviewDate", (object?)progress.NextReviewDate ?? DBNull.Value);
             command.Parameters.AddWithValue("@ConfidenceLevel", (object?)progress.ConfidenceLevel ?? DBNull.Value);
         }
+        public UserPreferenceDTO GetUserPreferences(int userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
 
+                using (var command = new SqlCommand("SELECT LearningStyle, PreferredStudyTime, StudySessionDuration, BreakDuration FROM UserPreferences WHERE UserId = @UserId", connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new UserPreferenceDTO
+                            {
+                                LearningStyle = reader["LearningStyle"].ToString(),
+                                PreferredStudyTime = reader["PreferredStudyTime"].ToString(),
+                                StudySessionDuration = Convert.ToInt32(reader["StudySessionDuration"]),
+                                BreakDuration = Convert.ToInt32(reader["BreakDuration"])
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public List<TimeSlotDTO> GetUserTimeSlots(int userId)
+        {
+            var timeSlots = new List<TimeSlotDTO>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                using (var command = new SqlCommand("SELECT Day, StartTime, EndTime FROM StudySessions WHERE UserId = @UserId", connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            timeSlots.Add(new TimeSlotDTO
+                            {
+                                Day = reader["Day"].ToString(),
+                                StartTime = reader["StartTime"].ToString(),
+                                EndTime = reader["EndTime"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            return timeSlots;
+        }
+
+        public List<ProgressWithDetailsDTO> GetUserProgressWithDetails(int userId)
+        {
+            var progressList = new List<ProgressWithDetailsDTO>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+                    SELECT 
+                        p.SubjectId,
+                        s.SubjectName,
+                        s.Priority,
+                        s.DifficultyLevel,
+                        s.EstimatedCompletionTime
+                    FROM Progress p
+                    INNER JOIN Subjects s ON p.SubjectId = s.id
+                    WHERE p.UserId = @UserId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            progressList.Add(new ProgressWithDetailsDTO
+                            {
+                                SubjectId = Convert.ToInt32(reader["SubjectId"]),
+                                SubjectName = reader["SubjectName"].ToString(),
+                                Priority = Convert.ToInt32(reader["Priority"]),
+                                DifficultyLevel = Convert.ToInt32(reader["DifficultyLevel"]),
+                                EstimatedCompletionTime = reader["EstimatedCompletionTime"] as int?
+                            });
+                        }
+                    }
+                }
+            }
+
+            return progressList;
+        }
+    
         private ProgressDTO MapReaderToProgress(SqlDataReader reader)
         {
             return new ProgressDTO

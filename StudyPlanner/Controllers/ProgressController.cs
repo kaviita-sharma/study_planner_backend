@@ -27,6 +27,30 @@ namespace Study_Planner.API.Controllers
             }
             return Ok(enrichedProgressRecords);
         }
+        [Authorize]
+        [HttpGet("user-study-plan")]
+        public IActionResult GetUserStudyPlan()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized(new { Message = "Invalid token or user ID missing." });
+            }
+
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return BadRequest(new { Message = "Invalid user ID format." });
+            }
+
+            var studyPlan = _service.GetUserStudyPlan(userId);
+
+            if (studyPlan == null)
+            {
+                return NotFound(new { Message = "Study plan not found for the specified user." });
+            }
+
+            return Ok(studyPlan);
+        }
 
         [Authorize]
         [HttpGet]
