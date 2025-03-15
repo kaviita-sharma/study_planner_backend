@@ -14,5 +14,6 @@ namespace Study_Planner._DLL.IRepository
         Task<int> AddSubTopicAsync(int topicId,SubTopics subTopicDto);
         Task<IEnumerable<SubTopics>> GetSubTopicByTopicId(int topicId);
         Task<bool> DeleteSubTopicAsync(int id);
+        Task<bool> UpdateSubTopicByIdAsync(int id, SubTopics updateDto);
     }
 }

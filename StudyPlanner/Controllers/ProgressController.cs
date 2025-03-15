@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Study_Planner.BLL.IServices;
 using Study_Planner.Core.DTOs.Study_Planner.Core.DTOs;
+using System.Security.Claims;
 
 namespace Study_Planner.API.Controllers
 {
@@ -15,20 +17,37 @@ namespace Study_Planner.API.Controllers
             _service = service;
         }
 
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+          //  var progressRecords = _service.GetAllProgress();
+            //return Ok(progressRecords);
+        //
+        [Authorize]
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetByUserId()
         {
-            var progressRecords = _service.GetAllProgress();
-            return Ok(progressRecords);
-        }
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                {
+                    return Unauthorized(new { Message = "Invalid token or user ID missing." });
+                }
 
-        [HttpGet("{userId}")]
-        public IActionResult GetByUserId(int userId)
-        {
-            var progress = _service.GetProgressByUserId(userId);
-            if (progress == null)
-                return NotFound();
-            return Ok(progress);
+                if (!int.TryParse(userIdClaim, out int userId))
+                {
+                    return BadRequest(new { Message = "Invalid user ID format." });
+                }
+                var progress = _service.GetProgressByUserId(userId);
+                if (progress == null)
+                    return NotFound();
+                return Ok(progress);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Error = ex.Message });
+            }
         }
 
         [HttpPost]

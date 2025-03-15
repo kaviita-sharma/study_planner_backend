@@ -15,6 +15,7 @@ namespace Study_Planner.Core.DTOs
         public int? EstimatedCompletionTime { get; set; } = 60;
         public int? OrderIndex { get; set; }
         public bool? IsActive { get; set; }
+        public int? sessionId { get; set; }
     }
 }
 
